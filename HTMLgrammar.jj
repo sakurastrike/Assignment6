@@ -1,0 +1,86 @@
+options 
+{
+  BUILD_PARSER=false;
+  IGNORE_CASE=false;
+}
+
+PARSER_BEGIN(Assignment6)
+public class Assignment6 {
+  
+  }
+PARSER_END(Assignment6)
+
+TOKEN_MGR_DECLS : {
+  	static int stringSize;
+  	static String comment = "";
+  	static String stringLit = "";
+    public static void main(String[] args)
+    {
+      	try
+      	{
+      	  
+      	java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("input.txt"));
+      	StringBuilder sb = new StringBuilder();
+		String line = "";
+		while((line = br.readLine()) != null)
+			sb.append(line+"\r\n");
+     	
+        java.io.StringReader sr = new java.io.StringReader(sb.toString());
+        SimpleCharStream scs = new SimpleCharStream(sr);
+        CS153Assignment5TokenManager mgr = new CS153Assignment5TokenManager(scs);
+        while (mgr.getNextToken().kind != EOF) {}
+        }
+     	catch (Exception e)
+     	{
+			debugStream.println(e);
+     	}
+    }
+}
+
+SPECIAL_TOKEN :
+{ 
+  	<STRING_LITERAL:"<!--" (~["\n","\r","\""])* ("-->"|"\n"|"\r"|"\r\n") >
+  	{ debugStream.println("STRING token: " + matchedToken.image); }
+}
+
+/*SKIP :
+{
+  "/*" : WithinMultiLineComment
+}*/
+
+<WithinMultiLineComment> SKIP :
+{
+  "*/"
+  /*{System.out.println("MULTI-LINE COMMENT = " + comment);comment = "";}*/
+   : DEFAULT
+}
+
+<WithinMultiLineComment> MORE :
+{
+  <~[]> {comment += curChar;}
+}
+
+SKIP : {
+    <IGNORE : [" ","\r","\n"]>
+}
+
+TOKEN:
+{
+    <CHARACTER:
+    "'"(["a"-"z", "A"-"Z", "_"]|"\\"|["0"-"9"])"'"
+    >  { debugStream.println("CHARACTER token: " + matchedToken.image); }
+    |
+    <RESERVED: 
+    "header"|"body"|"table"|"tr"|"td"|"th"|"html"
+    >  { debugStream.println("RESERVED token: " + matchedToken.image); }
+    |
+    <IDENTIFIER: (["a"-"z", "A"-"Z"])(["a"-"z", "A"-"Z", "0"-"9","_", "-"])* >  
+   	{ debugStream.println("IDENTIFIER token: " + matchedToken.image); }
+    |
+    <SPECIAL_SYMBOLS: 
+    "<"| ">" | "</" | "=" | "\"" 
+    >
+    { debugStream.println("SPECIAL SYMBOL token: " + matchedToken.image); }
+    |
+    
+}
