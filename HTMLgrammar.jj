@@ -70,15 +70,28 @@ TOKEN:
     "'"(["a"-"z", "A"-"Z", "_"]|"\\"|["0"-"9"])"'"
     >  { debugStream.println("CHARACTER token: " + matchedToken.image); }
     |
-    <RESERVED: 
-    "header"|"body"|"table"|"tr"|"td"|"th"|"html"
+    <DIGIT:
+    ["0"-"9"]
+    >
+    <RESERVED:
+     "if" | "else" | "then" | 
+    "exit"| "throw" | 
+    "break" |  "import" | "public" | "void" | "throws" |
+     "return" |
+     "int" |
+     "true" | "false" | 
+    "try" |"catch" |  "void" |
+     "new" | "switch" | "while" |
+     "for" | "null"|
+     "table" |"table-data"
+     "get"|"print" 
     >  { debugStream.println("RESERVED token: " + matchedToken.image); }
     |
     <IDENTIFIER: (["a"-"z", "A"-"Z"])(["a"-"z", "A"-"Z", "0"-"9","_", "-"])* >  
    	{ debugStream.println("IDENTIFIER token: " + matchedToken.image); }
     |
     <SPECIAL_SYMBOLS: 
-    "<"| ">" | "</" | "=" | "\"" 
+     "," | "#" | "(" | ")" | "\"" | "="
     >
     { debugStream.println("SPECIAL SYMBOL token: " + matchedToken.image); }
     |
