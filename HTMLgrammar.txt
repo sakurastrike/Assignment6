@@ -1,0 +1,97 @@
+
+DOCUMENT START
+TOKENS
+<DEFAULT> SPECIAL : {
+<SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
+}
+
+/*SKIP :
+{
+  "/*" : WithinMultiLineComment
+}*/<WithinMultiLineComment> SKIP : {
+"*/" : DEFAULT
+}
+
+<WithinMultiLineComment> MORE : {
+<~[]> : {
+}
+
+<DEFAULT> SKIP : {
+<IGNORE: [" ","\r","\n","\t"]>
+}
+
+<DEFAULT> TOKEN : {
+<STRING_LITERAL: "\"" (~["\n","\r","\""])* ("\"" | "\n" | "\r" | "\r\n")> : {
+| <CHARACTER: "\'" (["a"-"z","A"-"Z","_"] | "\\" | ["0"-"9"]) "\'"> : {
+| <DIGIT: ["0"-"9"]>
+| <IF: "if"> : {
+| <ELSE: "else"> : {
+| <THEN: "then"> : {
+| <EXIT: "exit"> : {
+| <THROW: "throw"> : {
+| <BREAK: "break"> : {
+| <VOID: "void"> : {
+| <RETURN: "return"> : {
+| <INT: "int"> : {
+| <NUMBER: "number"> : {
+| <STRING: "string"> : {
+| <TRUE: "true"> : {
+| <FALSE: "false"> : {
+| <TRY: "try"> : {
+| <CATCH: "catch"> : {
+| <FOR: "for"> : {
+| <NULL: "null"> : {
+| <TABLE: "table"> : {
+| <TABLE_DATA: "table_data"> : {
+| <COLOR: "color"> : {
+| <GET: "get"> : {
+| <PRINT: "print"> : {
+| <CLOSE: "close"> : {
+| <FILE: "file"> : {
+| <LOAD: "load"> : {
+| <GET_TABLE: "getTable"> : {
+| <GET_DATA: "getData"> : {
+| <GET_COLOR: "getColor"> : {
+| <IDENTIFIER: ["a"-"z","A"-"Z"] (["a"-"z","A"-"Z","0"-"9","_","-"])*> : {
+| <LEFT_PAREN: "("> : {
+| <RIGHT_PAREN: ")"> : {
+| <LEFT_CURLY: "{"> : {
+| <RIGHT_CURLY: "}"> : {
+| <PLUS: "+"> : {
+| <MINUS: "-"> : {
+| <EQUALS: "="> : {
+| <LESS_THAN: "<"> : {
+| <GREATER_THAN: ">"> : {
+| <BANG: "!"> : {
+| <COMMA: ","> : {
+| <PERIOD: "."> : {
+| <SEMICOLON: ";"> : {
+| <AT_SIGN: "@"> : {
+| <POUND_SIGN: "#"> : {
+}
+
+NON-TERMINALS
+//production rules
+	Program	:=	( Statement )+ <EOF>
+	Statement	:=	( IntDeclaration | StringDeclaration | SimpleAssignment | FileDeclaration | LoadStatement | TableDeclaration | GetTableStatement | TableDataDeclaration | GetTableDataStatement | ColorDeclaration | GetColorStatement | PrintStatement | CloseStatement | IfStatement )
+	IntDeclaration	:=	<INT> <IDENTIFIER> <EQUALS> <DIGIT> <SEMICOLON>
+	SimpleAssignment	:=	<IDENTIFIER> <EQUALS> ( <DIGIT> | <STRING_LITERAL> ) <SEMICOLON>
+	StringDeclaration	:=	<STRING> <IDENTIFIER> <EQUALS> <STRING_LITERAL> <SEMICOLON>
+	FileDeclaration	:=	<FILE> <IDENTIFIER> <EQUALS> LoadStatement
+	LoadStatement	:=	<LOAD> <LEFT_PAREN> <IDENTIFIER> <RIGHT_PAREN> <SEMICOLON>
+	TableDeclaration	:=	<TABLE> <IDENTIFIER> <EQUALS> GetTableStatement
+	GetTableStatement	:=	<GET_TABLE> <LEFT_PAREN> <IDENTIFIER> <RIGHT_PAREN> <SEMICOLON>
+	TableDataDeclaration	:=	<TABLE_DATA> <IDENTIFIER> <EQUALS> GetTableDataStatement
+	GetTableDataStatement	:=	<GET_DATA> <LEFT_PAREN> MultipleParams <RIGHT_PAREN> <SEMICOLON>
+	ColorDeclaration	:=	<COLOR> <IDENTIFIER> <EQUALS> GetColorStatement
+	GetColorStatement	:=	<GET_COLOR> <LEFT_PAREN> MultipleParams <RIGHT_PAREN> <SEMICOLON>
+	MultipleParams	:=	( <IDENTIFIER> | ( <DIGIT> )+ ) ( <COMMA> ( <IDENTIFIER> | ( <DIGIT> )+ ) )*
+	PrintStatement	:=	<PRINT> <LEFT_PAREN> <IDENTIFIER> <RIGHT_PAREN> <SEMICOLON>
+	CloseStatement	:=	<CLOSE> <LEFT_PAREN> <IDENTIFIER> <RIGHT_PAREN> <SEMICOLON>
+	IfStatement	:=	<IF> <LEFT_PAREN> Expression <RIGHT_PAREN> <LEFT_CURLY> Statement <RIGHT_CURLY>
+	Expression	:=	Operator
+	Operator	:=	<IDENTIFIER> expr_operator Operand
+	Operand	:=	<DIGIT>
+	expr_operator	:=	( <PLUS> | <MINUS> | <EQUALS> | <GREATER_THAN> | <LESS_THAN> )
+
+DOCUMENT END
