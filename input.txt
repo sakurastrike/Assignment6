@@ -1,5 +1,11 @@
 main(){
-	File webpage = load ("newpage.html"); //load a html file
+	int i =3;
+	if(i<0)
+	{
+		return;
+	}
+	String filename = "newpage.html";
+	File webpage = load(filename); //load a html file
 	Table t = getTable(webpage); //load the first seen table from webpage
 	Table_Data td = getData(1, 2, t); //get data in row 1 and column 2 in t
 	Color c = getColor(1,2,t); //get color of the text in row 1 and column 2 in t
