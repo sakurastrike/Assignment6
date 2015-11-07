@@ -6,11 +6,32 @@ options
 }
 
 PARSER_BEGIN(HtScrape)
+import java.io.*;
 public class HtScrape {
 
+    public static void main(String [] args)
+    {
+      try {
+        java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("in.txt"));
+      	StringBuilder sb = new StringBuilder();
+		String line = "";
+		while((line = br.readLine()) != null)
+			sb.append(line+"\r\n"); 
+     	
+        java.io.StringReader sr = new java.io.StringReader(sb.toString());
+        HtScrape parser = new HtScrape(sr);
+       
+        parser.Program();
+        }
+        catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
   
-  
-  }
 PARSER_END(HtScrape)
 
 TOKEN_MGR_DECLS : {
@@ -44,9 +65,8 @@ SPECIAL_TOKEN :
 { 
   	<SINGLE_LINE_COMMENT:"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
   	//{ debugStream.print("COMMENT token: " + matchedToken.image); }
- 	| 
-  	<STRING_LITERAL:"\"" (~["\n","\r","\""])* ("\""|"\n"|"\r"|"\r\n")>
-  	{ debugStream.println("STRING token: " + matchedToken.image); }
+ 	
+  	
 }
 
 /*SKIP :
@@ -72,6 +92,9 @@ SKIP : {
 
 TOKEN:
 {
+  	<STRING_LITERAL:"\"" (~["\n","\r","\""])* ("\""|"\n"|"\r"|"\r\n")>
+  	{ debugStream.println("STRING_LITERAL token: " + matchedToken.image); }
+ 	| 
     <CHARACTER:
     "'"(["a"-"z", "A"-"Z", "_"]|"\\"|["0"-"9"])"'"
     >  { debugStream.println("CHARACTER token: " + matchedToken.image); }
@@ -148,6 +171,12 @@ TOKEN:
     |
     < CLOSE: "close" >
 	{ debugStream.println("CLOSE token: " + matchedToken.image); }
+ 	|
+ 	< FILE: "file" >
+    { debugStream.println("FILE token: " + matchedToken.image); }
+    |
+    < LOAD: "load" >
+	{ debugStream.println("LOAD token: " + matchedToken.image); }
  	|  
     <IDENTIFIER: (["a"-"z", "A"-"Z"])(["a"-"z", "A"-"Z", "0"-"9","_", "-"])* >  
    	{ debugStream.println("IDENTIFIER token: " + matchedToken.image); }
@@ -165,13 +194,19 @@ TOKEN:
  	< RIGHT_CURLY: "}" >
 	{ debugStream.println("RIGHT_CURLY token: " + matchedToken.image); }
 	| 
+	< PLUS: "+" >
+ 	{ debugStream.println("PLUS token: " + matchedToken.image); }
+	|
+	< MINUS: "-" >
+ 	{ debugStream.println("MINUS token: " + matchedToken.image); }
+	|
  	< EQUALS: "=" >
  	{ debugStream.println("EQUALS token: " + matchedToken.image); }
 	|
 	< LESS_THAN: "<" >
 	{ debugStream.println("LESS_THAN token: " + matchedToken.image); }
 	|
-	< GREATER_THAN: " >" >
+	< GREATER_THAN: ">" >
 	{ debugStream.println("GREATER_THAN token: " + matchedToken.image); }
 	|
 	< BANG: "!" >
@@ -191,5 +226,108 @@ TOKEN:
 	|
 	< POUND_SIGN: "#" >
 	{ debugStream.println("POUND_SIGN token: " + matchedToken.image); }
-    
 }
+	//production rules
+	void Program(): {}
+	{
+	  (Statement())+
+	  { System.out.println("\n** Successfully parsed an entire Program!\n"); }
+	}
+	
+	void Statement() : {}
+	{
+	  (
+	    IntDeclaration() |
+	    StringDeclaration() |
+	    SimpleAssignment() |
+	    FileDeclaration() |
+	    IfStatement()
+	  )
+	   
+	  //< SEMICOLON >
+	}
+
+	void IntDeclaration(): {}
+	{
+	  < INT >
+	  < IDENTIFIER >
+	  < EQUALS >
+	  < DIGIT >
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed an Int Declaration!\n"); }
+	}
+	
+	void SimpleAssignment() : {}
+	{
+	  < IDENTIFIER >
+	  < EQUALS >
+	  (< DIGIT >|< STRING_LITERAL >)
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed a Simple Assignment!\n"); }
+	}
+
+	void StringDeclaration() : {}
+	{
+	  < STRING >
+	  < IDENTIFIER >
+	  < EQUALS >
+	  < STRING_LITERAL >
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed a String Declaration!\n"); }
+	}
+
+	void FileDeclaration() : {}
+	{
+	  < FILE >
+	  < IDENTIFIER >
+	  < EQUALS >
+	  LoadStatement()
+	  { System.out.println("Successfully parsed a File Declaration!\n"); }
+	}
+
+	void LoadStatement() : {}
+	{
+	  < LOAD >
+	  < LEFT_PAREN >
+	  < IDENTIFIER >
+	  < RIGHT_PAREN >
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed a Load Statement!\n"); }
+	}
+	
+    void IfStatement() : {} {
+  		<IF><LEFT_PAREN>
+  		Expression()
+  		<RIGHT_PAREN><LEFT_CURLY >
+  		Statement()
+  		<RIGHT_CURLY >
+    	{ System.out.println("Successfully parsed an if statement!\n"); }
+	}
+	
+	void Expression() : {} 
+	{
+  		{System.out.println("\nEXPRESSION STARTS");}
+  		Operator()
+  		{System.out.println("EXPRESSION ENDS\n");}
+	}
+
+	void Operator() : {} 
+	{
+  		<IDENTIFIER> 
+  		expr_operator()  
+  		Operand()
+	}
+	
+
+	void Operand() : {Token t;} 
+	{
+ 		 t=<DIGIT> {System.out.println("Operand: " + t.image);}
+	}
+
+	void expr_operator() :{Token t;	}
+	{
+	  {System.out.println("Operator:");}
+	  (< PLUS >|< MINUS >|< EQUALS >|< GREATER_THAN >|< LESS_THAN >)
+	}
+
+    
