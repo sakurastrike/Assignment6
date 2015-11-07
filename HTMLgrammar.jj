@@ -12,7 +12,7 @@ public class HtScrape {
     public static void main(String [] args)
     {
       try {
-        java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("in.txt"));
+        java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("input.txt"));
       	StringBuilder sb = new StringBuilder();
 		String line = "";
 		while((line = br.readLine()) != null)
@@ -64,9 +64,7 @@ TOKEN_MGR_DECLS : {
 SPECIAL_TOKEN :
 { 
   	<SINGLE_LINE_COMMENT:"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
-  	//{ debugStream.print("COMMENT token: " + matchedToken.image); }
- 	
-  	
+  	//{ debugStream.print("COMMENT token: " + matchedToken.image); }	
 }
 
 /*SKIP :
@@ -177,6 +175,15 @@ TOKEN:
     |
     < LOAD: "load" >
 	{ debugStream.println("LOAD token: " + matchedToken.image); }
+ 	|
+ 	< GET_TABLE: "getTable" >
+	{ debugStream.println("GET_TABLE token: " + matchedToken.image); }
+ 	|
+ 	< GET_DATA: "getData" >
+	{ debugStream.println("GET_DATA token: " + matchedToken.image); }
+ 	|
+ 	< GET_COLOR: "getColor" >
+	{ debugStream.println("GET_COLOR token: " + matchedToken.image); }
  	|  
     <IDENTIFIER: (["a"-"z", "A"-"Z"])(["a"-"z", "A"-"Z", "0"-"9","_", "-"])* >  
    	{ debugStream.println("IDENTIFIER token: " + matchedToken.image); }
@@ -231,6 +238,7 @@ TOKEN:
 	void Program(): {}
 	{
 	  (Statement())+
+	  < EOF >
 	  { System.out.println("\n** Successfully parsed an entire Program!\n"); }
 	}
 	
@@ -241,6 +249,15 @@ TOKEN:
 	    StringDeclaration() |
 	    SimpleAssignment() |
 	    FileDeclaration() |
+	    LoadStatement() |
+	    TableDeclaration() |
+	    GetTableStatement() |
+	    TableDataDeclaration() |
+	    GetTableDataStatement() |
+	    ColorDeclaration() |
+	    GetColorStatement() |
+	    PrintStatement() |
+	    CloseStatement() |
 	    IfStatement()
 	  )
 	   
@@ -294,6 +311,94 @@ TOKEN:
 	  < SEMICOLON >
 	  { System.out.println("Successfully parsed a Load Statement!\n"); }
 	}
+
+	void TableDeclaration(): {}
+	{
+	  < TABLE >
+	  < IDENTIFIER >
+	  < EQUALS >
+	  GetTableStatement()
+	  { System.out.println("Successfully parsed a Table Declaration!\n"); }
+	}
+
+	void GetTableStatement(): {}
+	{
+	  < GET_TABLE >
+	  < LEFT_PAREN >
+	  < IDENTIFIER >
+	  < RIGHT_PAREN >
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed a GetTable Statement!\n"); }
+	}
+
+	void TableDataDeclaration(): {}
+	{
+	  < TABLE_DATA >
+	  < IDENTIFIER >
+	  < EQUALS >
+	  GetTableDataStatement()
+	  { System.out.println("Successfully parsed a TableData Declaration!\n"); }
+	}
+
+	void GetTableDataStatement(): {}
+	{
+	  < GET_DATA >
+	  < LEFT_PAREN >
+	  MultipleParams()
+	  < RIGHT_PAREN >
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed a GetTableData Statement!\n"); }
+	}
+
+	void ColorDeclaration(): {}
+	{
+	  < COLOR >
+	  < IDENTIFIER >
+	  < EQUALS >
+	  GetColorStatement()
+	  { System.out.println("Successfully parsed a Color Declaration!\n"); }
+	}
+
+	void GetColorStatement(): {}
+	{
+	  < GET_COLOR >
+	  < LEFT_PAREN >
+	  MultipleParams()
+	  < RIGHT_PAREN >
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed a GetColor Statement!\n"); }
+	}
+	
+	void MultipleParams() : {}
+	{
+	  (< IDENTIFIER >|(< DIGIT >)+)
+	  (
+	    < COMMA >
+	    (
+	      < IDENTIFIER >|(< DIGIT >)+)
+	  )*
+	  { System.out.println("Successfully parsed multiple parameters!\n"); }
+	}
+
+	void PrintStatement() : {}
+	{
+	  < PRINT >
+	  < LEFT_PAREN >
+	  < IDENTIFIER >
+	  < RIGHT_PAREN >
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed a Print Statement!\n"); }
+	}
+
+	void CloseStatement() : {}
+	{
+	  < CLOSE >
+	  < LEFT_PAREN >
+	  < IDENTIFIER >
+	  < RIGHT_PAREN >
+	  < SEMICOLON >
+	  { System.out.println("Successfully parsed a Close Statement!\n"); }
+	}
 	
     void IfStatement() : {} {
   		<IF><LEFT_PAREN>
@@ -318,7 +423,6 @@ TOKEN:
   		Operand()
 	}
 	
-
 	void Operand() : {Token t;} 
 	{
  		 t=<DIGIT> {System.out.println("Operand: " + t.image);}
