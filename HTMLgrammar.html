@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>BNF for HTMLgrammar.jj</TITLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER>BNF for HTMLgrammar.jj</H1>
+<H2 ALIGN=CENTER>TOKENS</H2>
+<TABLE>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SPECIAL : {
+&lt;SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*SKIP :
+{
+  "/*" : WithinMultiLineComment
+}*/</PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;WithinMultiLineComment&gt; SKIP : {
+"*/" : DEFAULT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;WithinMultiLineComment&gt; MORE : {
+&lt;~[]&gt; : {
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SKIP : {
+&lt;IGNORE: [" ","\r","\n","\t"]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;STRING_LITERAL: "\"" (~["\n","\r","\""])* ("\"" | "\n" | "\r" | "\r\n")&gt; : {
+| &lt;CHARACTER: "\'" (["a"-"z","A"-"Z","_"] | "\\" | ["0"-"9"]) "\'"&gt; : {
+| &lt;DIGIT: ["0"-"9"]&gt;
+| &lt;IF: "if"&gt; : {
+| &lt;ELSE: "else"&gt; : {
+| &lt;THEN: "then"&gt; : {
+| &lt;EXIT: "exit"&gt; : {
+| &lt;THROW: "throw"&gt; : {
+| &lt;BREAK: "break"&gt; : {
+| &lt;VOID: "void"&gt; : {
+| &lt;RETURN: "return"&gt; : {
+| &lt;INT: "int"&gt; : {
+| &lt;NUMBER: "number"&gt; : {
+| &lt;STRING: "string"&gt; : {
+| &lt;TRUE: "true"&gt; : {
+| &lt;FALSE: "false"&gt; : {
+| &lt;TRY: "try"&gt; : {
+| &lt;CATCH: "catch"&gt; : {
+| &lt;FOR: "for"&gt; : {
+| &lt;NULL: "null"&gt; : {
+| &lt;TABLE: "table"&gt; : {
+| &lt;TABLE_DATA: "table_data"&gt; : {
+| &lt;COLOR: "color"&gt; : {
+| &lt;GET: "get"&gt; : {
+| &lt;PRINT: "print"&gt; : {
+| &lt;CLOSE: "close"&gt; : {
+| &lt;FILE: "file"&gt; : {
+| &lt;LOAD: "load"&gt; : {
+| &lt;GET_TABLE: "getTable"&gt; : {
+| &lt;GET_DATA: "getData"&gt; : {
+| &lt;GET_COLOR: "getColor"&gt; : {
+| &lt;IDENTIFIER: ["a"-"z","A"-"Z"] (["a"-"z","A"-"Z","0"-"9","_","-"])*&gt; : {
+| &lt;LEFT_PAREN: "("&gt; : {
+| &lt;RIGHT_PAREN: ")"&gt; : {
+| &lt;LEFT_CURLY: "{"&gt; : {
+| &lt;RIGHT_CURLY: "}"&gt; : {
+| &lt;PLUS: "+"&gt; : {
+| &lt;MINUS: "-"&gt; : {
+| &lt;EQUALS: "="&gt; : {
+| &lt;LESS_THAN: "&lt;"&gt; : {
+| &lt;GREATER_THAN: "&gt;"&gt; : {
+| &lt;BANG: "!"&gt; : {
+| &lt;COMMA: ","&gt; : {
+| &lt;PERIOD: "."&gt; : {
+| &lt;SEMICOLON: ";"&gt; : {
+| &lt;AT_SIGN: "@"&gt; : {
+| &lt;POUND_SIGN: "#"&gt; : {
+}
+
+   </PRE>
+  </TD>
+ </TR>
+</TABLE>
+<H2 ALIGN=CENTER>NON-TERMINALS</H2>
+<TABLE>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//production rules
+</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">Program</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod2">Statement</A> )+ &lt;EOF&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod2">Statement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod3">IntDeclaration</A> | <A HREF="#prod4">StringDeclaration</A> | <A HREF="#prod5">SimpleAssignment</A> | <A HREF="#prod6">FileDeclaration</A> | <A HREF="#prod7">LoadStatement</A> | <A HREF="#prod8">TableDeclaration</A> | <A HREF="#prod9">GetTableStatement</A> | <A HREF="#prod10">TableDataDeclaration</A> | <A HREF="#prod11">GetTableDataStatement</A> | <A HREF="#prod12">ColorDeclaration</A> | <A HREF="#prod13">GetColorStatement</A> | <A HREF="#prod14">PrintStatement</A> | <A HREF="#prod15">CloseStatement</A> | <A HREF="#prod16">IfStatement</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod3">IntDeclaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;INT&gt; &lt;IDENTIFIER&gt; &lt;EQUALS&gt; &lt;DIGIT&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">SimpleAssignment</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt; &lt;EQUALS&gt; ( &lt;DIGIT&gt; | &lt;STRING_LITERAL&gt; ) &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">StringDeclaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;STRING&gt; &lt;IDENTIFIER&gt; &lt;EQUALS&gt; &lt;STRING_LITERAL&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">FileDeclaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FILE&gt; &lt;IDENTIFIER&gt; &lt;EQUALS&gt; <A HREF="#prod7">LoadStatement</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">LoadStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LOAD&gt; &lt;LEFT_PAREN&gt; &lt;IDENTIFIER&gt; &lt;RIGHT_PAREN&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">TableDeclaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;TABLE&gt; &lt;IDENTIFIER&gt; &lt;EQUALS&gt; <A HREF="#prod9">GetTableStatement</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">GetTableStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;GET_TABLE&gt; &lt;LEFT_PAREN&gt; &lt;IDENTIFIER&gt; &lt;RIGHT_PAREN&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">TableDataDeclaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;TABLE_DATA&gt; &lt;IDENTIFIER&gt; &lt;EQUALS&gt; <A HREF="#prod11">GetTableDataStatement</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">GetTableDataStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;GET_DATA&gt; &lt;LEFT_PAREN&gt; <A HREF="#prod17">MultipleParams</A> &lt;RIGHT_PAREN&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">ColorDeclaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;COLOR&gt; &lt;IDENTIFIER&gt; &lt;EQUALS&gt; <A HREF="#prod13">GetColorStatement</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod13">GetColorStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;GET_COLOR&gt; &lt;LEFT_PAREN&gt; <A HREF="#prod17">MultipleParams</A> &lt;RIGHT_PAREN&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">MultipleParams</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;IDENTIFIER&gt; | ( &lt;DIGIT&gt; )+ ) ( &lt;COMMA&gt; ( &lt;IDENTIFIER&gt; | ( &lt;DIGIT&gt; )+ ) )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod14">PrintStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;PRINT&gt; &lt;LEFT_PAREN&gt; &lt;IDENTIFIER&gt; &lt;RIGHT_PAREN&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod15">CloseStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;CLOSE&gt; &lt;LEFT_PAREN&gt; &lt;IDENTIFIER&gt; &lt;RIGHT_PAREN&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod16">IfStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IF&gt; &lt;LEFT_PAREN&gt; <A HREF="#prod18">Expression</A> &lt;RIGHT_PAREN&gt; &lt;LEFT_CURLY&gt; <A HREF="#prod2">Statement</A> &lt;RIGHT_CURLY&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">Expression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod19">Operator</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod19">Operator</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt; <A HREF="#prod20">expr_operator</A> <A HREF="#prod21">Operand</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod21">Operand</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIGIT&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod20">expr_operator</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;PLUS&gt; | &lt;MINUS&gt; | &lt;EQUALS&gt; | &lt;GREATER_THAN&gt; | &lt;LESS_THAN&gt; )</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
