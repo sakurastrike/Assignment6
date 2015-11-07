@@ -2,7 +2,7 @@ main(){
 	int i =3;
 	if(i<0)
 	{
-		return;
+		i = 0;
 	}
 	String filename = "newpage.html";
 	File webpage = load(filename); //load a html file
